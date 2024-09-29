@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ restaurant.name }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            border: 3px solid #f0f0f0;
+        }
+        p {
+            color: #555;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+        .event {
+            margin-top: 30px;
+        }
+        .event h3 {
+            color: #4CAF50;
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+        .event p {
+            color: #555;
+            font-size: 1em;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+        a:hover {
+            color: #388E3C;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        }
+        .details {
+            margin-top: 30px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+        }
+        .details p {
+            margin: 12px 0;
+        }
+        .details strong {
+            color: #333;
+        }
+        .events img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .details .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: #fff;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .details .button:hover {
+            background: #388E3C;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ restaurant.name }}</h1>
+        <img src="{{ restaurant.featured_image }}" alt="{{ restaurant.name }}">
+        <div class="details">
+            <p><strong>Address:</strong> {{ restaurant.location.address }}</p>
+            <p><strong>Cuisines:</strong> {{ restaurant.cuisines }}</p>
+            <p><strong>Average Cost for Two:</strong> ₹{{ restaurant.average_cost_for_two }}</p>
+            <p><strong>Rating:</strong> {{ restaurant.user_rating.aggregate_rating }} ({{ restaurant.user_rating.rating_text }})</p>
+            <p><a href="{{ restaurant.url }}" target="_blank" class="button">More details</a></p>
+        </div>
+
+        {% if restaurant.zomato_events %}
+            <div class="event">
+                <h3>Events</h3>
+                {% for event in restaurant.zomato_events %}
+                    <p><strong>Title:</strong> {{ event.event.title }}</p>
+                    <p><strong>Description:</strong> {{ event.event.description }}</p>
+                    <p><strong>Date:</strong> {{ event.event.display_date }}</p>
+                    <p><strong>Time:</strong> {{ event.event.display_time }}</p>
+                    {% if event.event.photos %}
+                        <img src="{{ event.event.photos[0].photo.url }}" alt="Event Photo">
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

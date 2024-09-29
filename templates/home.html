@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurants List</title>
+    <link rel="stylesheet" href="static/styles.css" />
+    <style>
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Zomato</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="filter-form">
+            <form method="get" action="{{ url_for('index') }}">
+                <label for="cuisine">Filter by Cuisine:</label>
+                <select name="cuisine" id="cuisine" onchange="this.form.submit()">
+                    <option value="">All Cuisines</option>
+                    {% for cuisine in cuisines %}
+                        <option value="{{ cuisine }}" {% if cuisine_filter == cuisine %}selected{% endif %}>{{ cuisine }}</option>
+                    {% endfor %}
+                </select>
+                
+                <label for="cost">Filter by Cost:</label>
+                <select name="cost" id="cost" onchange="this.form.submit()">
+                    <option value="">All Costs</option>
+                    {% for cost in costs %}
+                        <option value="{{ cost }}" {% if cost_filter == cost %}selected{% endif %}>{{ cost }}</option>
+                    {% endfor %}
+                </select>
+                
+                <label for="country">Filter by Country:</label>
+                <select name="country" id="country" onchange="this.form.submit()">
+                    <option value="">All Countries</option>
+                    {% for code, name in country_codes.items() %}
+                        <option value="{{ code }}" {% if country_filter|int == code %}selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+
+                <input type="text" name="search" placeholder="Search by name" value="{{ search_query }}">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        <div class="restaurant-list">
+            {% for i in range(0, restaurants|length, 3) %}
+                <div class="restaurant-row">
+                    {% for restaurant in restaurants[i:i+3] %}
+                        <div class="restaurant-item">
+                            <a href="{{ url_for('restaurant_detail', res_id=restaurant.R.res_id) }}">
+                                <img src="{{ restaurant.featured_image }}" alt="{{ restaurant.name }}">
+                                <h2>{{ restaurant.name }}</h2>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="pagination">
+            {% if page > 1 %}
+                <a href="{{ url_for('index', page=page-1, cuisine=cuisine_filter, search=search_query, cost=cost_filter, country=country_filter) }}">Previous</a>
+            {% endif %}
+            
+            {% set start_page = max(1, page - 2) %}
+            {% set end_page = min(pages, page + 2) %}
+            
+            {% if start_page > 1 %}
+                <a href="{{ url_for('index', page=1, cuisine=cuisine_filter, search=search_query, cost=cost_filter, country=country_filter) }}">1</a>
+                {% if start_page > 2 %}
+                    <span>...</span>
+                {% endif %}
+            {% endif %}
+            
+            {% for p in range(start_page, end_page + 1) %}
+                <a href="{{ url_for('index', page=p, cuisine=cuisine_filter, search=search_query, cost=cost_filter, country=country_filter) }}" class="{% if p == page %}active{% endif %}">{{ p }}</a>
+            {% endfor %}
+            
+            {% if end_page < pages %}
+                {% if end_page < pages - 1 %}
+                    <span>...</span>
+                {% endif %}
+                <a href="{{ url_for('index', page=pages, cuisine=cuisine_filter, search=search_query, cost=cost_filter, country=country_filter) }}">{{ pages }}</a>
+            {% endif %}
+            
+            {% if page < pages %}
+                <a href="{{ url_for('index', page=page+1, cuisine=cuisine_filter, search=search_query, cost=cost_filter, country=country_filter) }}">Next</a>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const cost = urlParams.get('cost');
+            const cuisine = urlParams.get('cuisine');
+            const country = urlParams.get('country');
+
+            if (cost) {
+                document.getElementById('cost').value = cost;
+            }
+            if (cuisine) {
+                document.getElementById('cuisine').value = cuisine;
+            }
+            if (country) {
+                document.getElementById('country').value = country;
+            }
+
+        });
+    </script>
+</body>
+</html>
